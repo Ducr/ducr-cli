@@ -1,0 +1,19 @@
+{
+  "name": "ducr-cli",
+  "version": "1.0.0",
+  "description": "一个可自定义快速搭建项目的cli",
+  "main": "./bin/ducr",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "ducr": "./bin/ducr",
+    "ducr-cli": "./bin/ducr"
+  },
+  "keywords": [
+    "ducr",
+    "ducr-cli"
+  ],
+  "author": "Ducr",
+  "license": "ISC"
+}
