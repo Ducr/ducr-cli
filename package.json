@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "一个可自定义快速搭建项目的cli",
   "main": "./bin/ducr",
+  "gitOwner": "Ducr",
+  "defaultOwner": "Ducr",
+  "repositoryName": "ducr-cli",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +18,16 @@
     "ducr-cli"
   ],
   "author": "Ducr",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.0",
+    "axios": "^0.20.0",
+    "chalk": "^4.1.0",
+    "co-prompt": "^1.0.0",
+    "commander": "^6.1.0",
+    "download-git-repo": "^3.0.2",
+    "fs-extra": "^9.0.1",
+    "inquirer": "^7.3.3",
+    "ora": "^5.1.0"
+  }
 }

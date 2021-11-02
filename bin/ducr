@@ -1,2 +1,54 @@
 #! /usr/bin/env node
-console.log((`🌟------------------------🌟\n👏 welcome to use ducr-cli👏\n🌟------------------------🌟`))
+
+const { chalk, program } = require('../libs/tools/module')
+const packageData = require('../package.json')
+const log = console.log
+
+//当前cli的名称 
+const cliName = packageData.name
+
+console.log(chalk.yellowBright.bold(`👏 welcome to use ${cliName}👏`))
+
+/**
+ * 参数的格式化方法
+ * @param { object } cmd 当前命令行中的命令数据
+ */
+const clearArgs = (cmd) => {
+  const args = {}
+  cmd.options.forEach(opt => {
+    const key = opt.long.slice(2)
+    // 如果当前命令通过key能取到这个值，则存在这个值
+    if (cmd[key])
+      args[key] = cmd[key]
+  })
+  return args
+}
+
+// 创建create命令 并进行操作
+program.command('create <app-name>')
+  .description("create a new project")
+  .option("-f,--force", 'overwrite target if it exists') // 一些参数配置及简写形式
+  .action((name, cmd) => { // 输入正确命令之后的操作，name 是命令，cmd 是参数
+    if (!name) {
+      log(chalk.red("please write project name"))
+      return
+    }
+    require('../libs/command/create.js')(name, clearArgs(cmd))
+  })
+
+// ducr-cli 的版本信息
+program
+  .version(`${cliName}@${packageData.version}`)
+  .usage('<command> [option]')
+
+// 在 --help 的时候进行调整
+program.on('--help', () => {
+  log(`Run ${chalk.red(`${cliName} <command> --help`)} show details`)
+})
+
+// 解析用户执行命令时候传入的参数，根据参数进行配置 
+program.parse(process.argv)
+
+if (!program.args.length) {
+  program.help()
+}
