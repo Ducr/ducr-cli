@@ -27,14 +27,13 @@ class Creator {
     const { name: repoName } = repo
 
     // 根据模版获取当前的分支信息
-    let branchName = await this.getRepoBranch(repoName)
-    const currBranch = this.branchs.find(item => item.name === branchName)
+    let branch = await this.getRepoBranch(repoName)
 
     // // 根据模版获取当前的版本信息
     // let tag = await this.getRepoTags(repoName)
 
     // 根据选择的模版和版本下载当前的地址内容
-    let downloadUrl = await this.downloadGit(repoName, currBranch)
+    let downloadUrl = await this.downloadGit(repoName, branch)
 
     // 下载完成后进入到当前的下载url中进行安装node_modules以及安装完成后进行提示
     let result = this.downloadNodeModules(downloadUrl)
@@ -92,16 +91,13 @@ class Creator {
   async downloadGit(repo, branch) {
     let downloadUrl = path.resolve(process.cwd(), this.target)
 
-    // 获取分支的url
-    const { name: branchName } = branch
-
     // 1.先拼接出下载路径，格式：github:owner/name 或者 owner/name
-    let requestUrl = `${gitOwner}/${repo}${branchName ? '#' + branchName : ''}`
+    let requestUrl = `${gitOwner}/${repo}${branch ? '#' + branch : ''}`
 
     // 2.把路径资源下载到某个路径上
 
     // todo 后续可以增加缓存功能 
-    await wrapLoading(this.downloadGitRepo, `Waiting for download the template of ${repo}${branchName ? '/' + branchName : ''}`, requestUrl, downloadUrl)
+    await wrapLoading(this.downloadGitRepo, `Waiting for download the template of ${repo}${branch ? '/' + branch : ''}`, requestUrl, downloadUrl)
     return downloadUrl
   }
 
