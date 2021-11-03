@@ -2,7 +2,7 @@ const path = require('path')
 const { inquirer, fse } = require('../tools/module')
 const Creator = require('../modules/Creator')
 const log = require("../modules/Log")
-const { gitOwner, repositoryName } = require('../../package.json')
+const { gitOwner, templateRepositoryName: repositoryName } = require('../../package.json')
 
 // 创建项目
 module.exports = async function (projectName, options = {}) {

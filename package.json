@@ -1,11 +1,12 @@
 {
   "name": "ducr-cli",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "一个可自定义快速搭建项目的cli，可指定下载GitHub中代码仓库的branch或tag",
   "main": "./bin/ducr",
   "gitOwner": "Ducr",
   "defaultOwner": "Ducr",
-  "repositoryName": "ducr-template",
+  "repository": "https://github.com/Ducr/ducr-cli.git",
+  "templateRepositoryName": "ducr-template",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -4,7 +4,7 @@
 // 获取github某仓库tab信息api：https://api.github.com/repos/Ducr/ducr-cli/tags
 
 const axios = require('axios')
-const { gitOwner, repositoryName } = require('../../package.json')
+const { gitOwner, templateRepositoryName: repositoryName } = require('../../package.json')
 
 // 添加拦截器
 axios.interceptors.response.use(res => {
