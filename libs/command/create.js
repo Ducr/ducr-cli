@@ -23,7 +23,7 @@ module.exports = async function (projectName, options = {}) {
         {
           name: 'action',
           type: 'list', // 类型比较丰富
-          message: "Target directory already exits,please select new action",
+          message: "Target directory already exits, please select new action",
           choices: [
             { name: 'Overwrite', value: 'overwrite' },
             { name: 'Cancel', value: false, },

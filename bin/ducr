@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-const { chalk, program, minimist } = require('../libs/tools/module')
+const { chalk, commander, minimist } = require('../libs/tools/module')
 const packageData = require('../package.json')
 const log = console.log
 
@@ -26,7 +26,7 @@ const clearArgs = (cmd) => {
 }
 
 // 创建create命令 并进行操作
-program.command('create <app-name>')
+commander.command('create <app-name>')
   .description("create a new project")
   .option("-f,--force", 'overwrite target if it exists') // 一些参数配置及简写形式
   .option("-o,--owner", 'overwrite target if it exists') // owner参数配置及简写形式
@@ -41,18 +41,18 @@ program.command('create <app-name>')
   })
 
 // ducr-cli 的版本信息
-program
+commander
   .version(`${cliName}@${packageData.version}`)
   .usage('<command> [option]')
 
 // 在 --help 的时候进行调整
-program.on('--help', () => {
+commander.on('--help', () => {
   log(`Run ${chalk.red(`${cliName} <command> --help`)} show details`)
 })
 
 // 解析用户执行命令时候传入的参数，根据参数进行配置 
-program.parse(process.argv)
+commander.parse(process.argv)
 
-if (!program.args.length) {
-  program.help()
+if (!commander.args.length) {
+  commander.help()
 }
