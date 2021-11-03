@@ -6,6 +6,9 @@ const chalk = require('chalk')
 // 解析当前输入的命令
 const program = require('commander')
 
+// 轻量级的命令行参数解析器，可将 --config Ducr 转换为键值对 config: Ducr
+const minimist = require('minimist')
+
 // 命令行输出选择框，checkbox、list 命令行交互
 const inquirer = require('inquirer')
 
@@ -21,6 +24,7 @@ const prompt = require('co-prompt')
 module.exports = {
   chalk,
   program,
+  minimist,
   inquirer,
   fse,
   ora,

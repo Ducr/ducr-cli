@@ -12,18 +12,18 @@ axios.interceptors.response.use(res => {
 })
 
 // 获取某个仓库主信息
-async function getRepoApi(configOwner = gitOwner) {
-  return axios.get(`https://api.github.com/repos/${configOwner}/${repositoryName}`)
+async function getRepoApi(configOwner = gitOwner, configRepo = repositoryName) {
+  return axios.get(`https://api.github.com/repos/${configOwner}/${configRepo}`)
 }
 
 // 获取某个仓库的branch
-async function getRepoBranchApi(repo = repositoryName) {
-  return axios.get(`https://api.github.com/repos/${gitOwner}/${repo}/branches`)
+async function getRepoBranchApi(configOwner = gitOwner, configRepo = repositoryName) {
+  return axios.get(`https://api.github.com/repos/${configOwner}/${configRepo}/branches`)
 }
 
 // 获取某个仓库的tag
-async function getRepoTagsApi(repo = repositoryName) {
-  return axios.get(`https://api.github.com/repos/${gitOwner}/${repo}/tags`)
+async function getRepoTagsApi(configOwner = gitOwner, configRepo = repositoryName) {
+  return axios.get(`https://api.github.com/repos/${configOwner}/${configRepo}/tags`)
 }
 
 module.exports = {

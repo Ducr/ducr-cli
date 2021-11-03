@@ -4,7 +4,7 @@ const Creator = require('../modules/Creator')
 const log = require("../modules/Log")
 
 // 创建项目
-module.exports = async function (projectName, options) {
+module.exports = async function (projectName, options = {}) {
   // todo 校验文件内容格式
 
   // 获取当前命令执行时候的工作目录
@@ -43,5 +43,7 @@ module.exports = async function (projectName, options) {
 
   // 当前文件操作已经完成，开始创建项目
   let creator = new Creator(projectName, targetDir)
-  creator.create()
+  // 获取命令行输入的github账号和代码仓库，默认是package.josn配置的gitOwner、repositoryName
+  const { owner, repository } = options
+  creator.create({ configOwner: owner, configRepository: repository })
 }

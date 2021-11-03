@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-const { chalk, program } = require('../libs/tools/module')
+const { chalk, program, minimist } = require('../libs/tools/module')
 const packageData = require('../package.json')
 const log = console.log
 
@@ -18,8 +18,9 @@ const clearArgs = (cmd) => {
   cmd.options.forEach(opt => {
     const key = opt.long.slice(2)
     // 如果当前命令通过key能取到这个值，则存在这个值
-    if (cmd[key])
+    if (cmd[key]) {
       args[key] = cmd[key]
+    }
   })
   return args
 }
@@ -28,12 +29,15 @@ const clearArgs = (cmd) => {
 program.command('create <app-name>')
   .description("create a new project")
   .option("-f,--force", 'overwrite target if it exists') // 一些参数配置及简写形式
+  .option("-o,--owner", 'overwrite target if it exists') // owner参数配置及简写形式
+  .option("-r,--repository", 'overwrite target if it exists') // repository参数配置及简写形式
   .action((name, cmd) => { // 输入正确命令之后的操作，name 是命令，cmd 是参数
     if (!name) {
       log(chalk.red("please write project name"))
       return
     }
-    require('../libs/command/create.js')(name, clearArgs(cmd))
+    // require('../libs/command/create.js')(name, clearArgs(cmd))
+    require('../libs/command/create.js')(name, minimist(process.argv.splice(2)))
   })
 
 // ducr-cli 的版本信息

@@ -28,6 +28,7 @@
     "download-git-repo": "^3.0.2",
     "fs-extra": "^9.0.1",
     "inquirer": "^7.3.3",
+    "minimist": "^1.2.5",
     "ora": "^5.1.0"
   }
 }

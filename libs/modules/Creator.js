@@ -21,16 +21,19 @@ class Creator {
     this.downloadGitRepo = util.promisify(downloadGitRepo)
   }
 
-  async create() {
+  async create(option = {}) {
+    // 获取命令行传入的owner、repository
+    const { configOwner, configRepository } = option
     // 先获取当前的模版信息
-    let repo = await this.getRepoInfo()
-    const { name: repoName } = repo
+    let repo = await this.getRepoInfo(configOwner, configRepository)
+    const { name: repoName, owner = {} } = repo
+    const { login: ownerName } = owner
 
     // 根据模版获取当前的分支信息
-    let branch = await this.getRepoBranch(repoName)
+    let branch = await this.getRepoBranch(ownerName, repoName)
 
     // 根据模版获取当前的版本信息
-    let tag = await this.getRepoTags(repoName, branch)
+    let tag = await this.getRepoTags(ownerName, repoName, branch)
 
     // 根据选择的模版和版本下载当前的地址内容
     let downloadUrl = await this.downloadGit(repoName, branch, tag)
@@ -40,16 +43,16 @@ class Creator {
   }
 
   // 获取用户某个仓库
-  async getRepoInfo() {
-    let repos = await wrapLoading(getRepoApi, 'Waiting for download the repository')
+  async getRepoInfo(owner, repo) {
+    let repos = await wrapLoading(() => getRepoApi(owner, repo), 'Waiting for download the repository')
     return repos || {}
   }
 
   // 获取某个仓库的分支
-  async getRepoBranch(repo) {
-    let branchs = await wrapLoading(getRepoBranchApi, `Waiting for fetch the branch of template ${repo}`, repo)
+  async getRepoBranch(owner, repo) {
+    let branchs = await wrapLoading(() => getRepoBranchApi(owner, repo), `Waiting for fetch the branch of template ${repo}`, repo)
     if (branchs.length == 0) {
-      log.error("No content is currently downloaded")
+      log.error("No branch is currently downloaded")
     }
 
     // 保存分支列表
@@ -68,13 +71,13 @@ class Creator {
   }
 
   // 获取版本
-  async getRepoTags(repo, branch) {
-    let tags = await wrapLoading(getRepoTagsApi, `Waiting for fetch the tags of template ${repo}`, repo)
+  async getRepoTags(owner, repo, branch) {
+    let tags = await wrapLoading(() => getRepoTagsApi(owner, repo), `Waiting for fetch the tags of template ${repo}`, repo)
     // 获取tags的name，筛选出归属于某个分支的下的tag，tag名称格式为：分支名+版本号
     tags = tags.map(tag => tag.name).filter(tag => tag.startsWith(branch))
 
     if (tags.length == 0) {
-      log.error("No content is currently downloaded")
+      log.error("No tag is currently downloaded")
       return
     }
 
