@@ -41,7 +41,7 @@ function toArray(arr) {
 }
 
 function isFn(fn) {
-  return Object.prototype.toString.call(fn) === "[object Function]"
+  return typeof fn === 'function'
 }
 
 function isArray(arr) {
@@ -60,5 +60,7 @@ module.exports = {
   delayFn,
   wrapLoading,
   toArray,
+  isArray,
+  isObject,
   isString,
 }

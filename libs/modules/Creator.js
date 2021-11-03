@@ -4,7 +4,7 @@ const { inquirer } = require('../tools/module')
 const exec = require('child_process').exec
 const { gitOwner } = require('../../package.json')
 
-// downloadGitRepo 为普通方法，不支持promise
+// downloadGitRepo 为普通方法，不支持promise，参考[https://www.npmjs.com/package/download-git-repo]
 const downloadGitRepo = require('download-git-repo')
 const util = require('util')
 const path = require('path')
@@ -38,34 +38,25 @@ class Creator {
 
     // 下载完成后进入到当前的下载url中进行安装node_modules以及安装完成后进行提示
     let result = this.downloadNodeModules(downloadUrl)
-
   }
 
   // 获取用户某个仓库
   async getRepoInfo() {
-    let repos = await wrapLoading(getRepoApi, 'Waiting for download the repos')
-    console.log('getRepo', repos)
+    let repos = await wrapLoading(getRepoApi, 'Waiting for download the repository')
     return repos || {}
   }
 
   // 获取某个仓库的分支
   async getRepoBranch(repo) {
-    let branchs = await wrapLoading(getRepoBranchApi, `Waiting for fetch the tags of template ${repo}`, repo)
+    let branchs = await wrapLoading(getRepoBranchApi, `Waiting for fetch the branch of template ${repo}`, repo)
     if (branchs.length == 0) {
       log.error("No content is currently downloaded")
     }
-    console.log('branchs----------', branchs)
 
     // 保存分支列表
     this.branchs = branchs
     // 获取branchs的name
-    branchs = branchs.map(item => {
-      let name = item.name
-      if (item.name === 'master') {
-        name = `${item.name}（vue-template-2.0）`
-      }
-      return name
-    })
+    branchs = branchs.map(item => item.name)
 
     // 用户交互展示出来
     let { branch } = await inquirer.prompt({
@@ -101,20 +92,16 @@ class Creator {
   async downloadGit(repo, branch) {
     let downloadUrl = path.resolve(process.cwd(), this.target)
 
-    // 获取仓库名称
-    const { name: repoName } = repo
-
     // 获取分支的url
-    const { commit = {}, commit: { url } } = branch
+    const { name: branchName } = branch
 
-    // 1.先拼接出下载路径
-    // let requestUrl = `${gitOwner}/${repo}${tag ? '#' + tag : ''}`
-    let requestUrl = url
+    // 1.先拼接出下载路径，格式：github:owner/name 或者 owner/name
+    let requestUrl = `${gitOwner}/${repo}${branchName ? '#' + branchName : ''}`
 
     // 2.把路径资源下载到某个路径上
 
     // todo 后续可以增加缓存功能 
-    await wrapLoading(this.downloadGitRepo, `Waiting for download the template of ${repoName}`, requestUrl, downloadUrl)
+    await wrapLoading(this.downloadGitRepo, `Waiting for download the template of ${repo}${branchName ? '/' + branchName : ''}`, requestUrl, downloadUrl)
     return downloadUrl
   }
 
