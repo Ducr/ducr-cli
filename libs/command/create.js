@@ -2,6 +2,7 @@ const path = require('path')
 const { inquirer, fse } = require('../tools/module')
 const Creator = require('../modules/Creator')
 const log = require("../modules/Log")
+const { gitOwner, repositoryName } = require('../../package.json')
 
 // 创建项目
 module.exports = async function (projectName, options = {}) {
@@ -44,6 +45,6 @@ module.exports = async function (projectName, options = {}) {
   // 当前文件操作已经完成，开始创建项目
   let creator = new Creator(projectName, targetDir)
   // 获取命令行输入的github账号和代码仓库，默认是package.josn配置的gitOwner、repositoryName
-  const { owner, repository } = options
+  const { owner = gitOwner, repository = repositoryName } = options
   creator.create({ configOwner: owner, configRepository: repository })
 }

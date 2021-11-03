@@ -2,7 +2,6 @@ const { getRepoApi, getRepoBranchApi, getRepoTagsApi } = require('../request/ind
 const { wrapLoading } = require('../tools/util')
 const { inquirer } = require('../tools/module')
 const exec = require('child_process').exec
-const { gitOwner } = require('../../package.json')
 
 // downloadGitRepo 为普通方法，不支持promise，参考[https://www.npmjs.com/package/download-git-repo]
 const downloadGitRepo = require('download-git-repo')
@@ -36,7 +35,7 @@ class Creator {
     let tag = await this.getRepoTags(ownerName, repoName, branch)
 
     // 根据选择的模版和版本下载当前的地址内容
-    let downloadUrl = await this.downloadGit(repoName, branch, tag)
+    let downloadUrl = await this.downloadGit(configOwner, repoName, branch, tag)
 
     // 下载完成后进入到当前的下载url中进行安装node_modules以及安装完成后进行提示
     let result = this.downloadNodeModules(downloadUrl)
@@ -92,23 +91,22 @@ class Creator {
   }
 
   // 进行下载
-  async downloadGit(repo, branch, tag) {
+  async downloadGit(owner, repo, branch, tag) {
     let downloadUrl = path.resolve(process.cwd(), this.target)
 
     // 1.先拼接出下载路径，默认是下载分支，格式：github:owner/name 或者 owner/name
     // 默认master分支, 后面添加"#branch"或"#tag"来指定branch或tag
-    let requestUrl = `${gitOwner}/${repo}${branch ? '#' + branch : ''}`
+    let requestUrl = `${owner}/${repo}${branch ? '#' + branch : ''}`
     let label = `${branch ? '/' + branch : ''}`
 
     // 如果有tag存在，则下载tag
     if (tag) {
-      requestUrl = `${gitOwner}/${repo}${tag ? '#' + tag : ''}`
+      requestUrl = `${owner}/${repo}${tag ? '#' + tag : ''}`
       label = `${tag ? '/' + tag : ''}`
     }
 
-    // 2.把路径资源下载到某个路径上
-
     // todo 后续可以增加缓存功能 
+    // 2.把路径资源下载到某个路径上
     await wrapLoading(this.downloadGitRepo, `Waiting for download the template of ${repo}${label}`, requestUrl, downloadUrl)
     return downloadUrl
   }

@@ -4,25 +4,30 @@ const { chalk, commander, minimist } = require('../libs/tools/module')
 const packageData = require('../package.json')
 const log = console.log
 
-//当前cli的名称 
+// 当前cli的名称
 const cliName = packageData.name
 
-console.log(chalk.yellowBright.bold(`👏 welcome to use ${cliName}👏`))
+log(chalk.yellowBright.bold(`👏 welcome to use ${cliName}👏`))
 
 /**
- * 参数的格式化方法
+ * 参数的格式化方法，配合minimist处理输出键值对参数
  * @param { object } cmd 当前命令行中的命令数据
  */
-const clearArgs = (cmd) => {
-  const args = {}
-  cmd.options.forEach(opt => {
-    const key = opt.long.slice(2)
-    // 如果当前命令通过key能取到这个值，则存在这个值
-    if (cmd[key]) {
-      args[key] = cmd[key]
-    }
+const handleArgs = (cmd = {}) => {
+  // 命令行传参的数组，格式为：[ 'create', 'demo', '-o', 'Ducr', '-r', 'ducr-template' ]
+  // 需处理为 [ 'create', 'demo', '--owner', 'Ducr', '--repository', 'ducr-template' ]
+  let argvList = process.argv.splice(2) || []
+  const { options } = cmd
+  options.forEach(opt => {
+    argvList = argvList.map(argv => {
+      let newArgv = argv
+      if (opt.short === argv || opt.long === argv) {
+        newArgv = opt.long
+      }
+      return newArgv
+    })
   })
-  return args
+  return minimist(argvList)
 }
 
 // 创建create命令 并进行操作
@@ -36,8 +41,7 @@ commander.command('create <app-name>')
       log(chalk.red("please write project name"))
       return
     }
-    // require('../libs/command/create.js')(name, clearArgs(cmd))
-    require('../libs/command/create.js')(name, minimist(process.argv.splice(2)))
+    require('../libs/command/create.js')(name, handleArgs(cmd))
   })
 
 // ducr-cli 的版本信息
