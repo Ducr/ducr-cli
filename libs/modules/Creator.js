@@ -29,11 +29,11 @@ class Creator {
     // 根据模版获取当前的分支信息
     let branch = await this.getRepoBranch(repoName)
 
-    // // 根据模版获取当前的版本信息
-    // let tag = await this.getRepoTags(repoName)
+    // 根据模版获取当前的版本信息
+    let tag = await this.getRepoTags(repoName, branch)
 
     // 根据选择的模版和版本下载当前的地址内容
-    let downloadUrl = await this.downloadGit(repoName, branch)
+    let downloadUrl = await this.downloadGit(repoName, branch, tag)
 
     // 下载完成后进入到当前的下载url中进行安装node_modules以及安装完成后进行提示
     let result = this.downloadNodeModules(downloadUrl)
@@ -68,14 +68,15 @@ class Creator {
   }
 
   // 获取版本
-  async getRepoTags(repo) {
+  async getRepoTags(repo, branch) {
     let tags = await wrapLoading(getRepoTagsApi, `Waiting for fetch the tags of template ${repo}`, repo)
+    // 获取tags的name，筛选出归属于某个分支的下的tag，tag名称格式为：分支名+版本号
+    tags = tags.map(tag => tag.name).filter(tag => tag.startsWith(branch))
+
     if (tags.length == 0) {
       log.error("No content is currently downloaded")
+      return
     }
-
-    // 获取tags的name
-    tags = tags.map(tag => tag.name)
 
     // 用户交互展示出来
     let { tag } = await inquirer.prompt({
@@ -88,16 +89,24 @@ class Creator {
   }
 
   // 进行下载
-  async downloadGit(repo, branch) {
+  async downloadGit(repo, branch, tag) {
     let downloadUrl = path.resolve(process.cwd(), this.target)
 
-    // 1.先拼接出下载路径，格式：github:owner/name 或者 owner/name
+    // 1.先拼接出下载路径，默认是下载分支，格式：github:owner/name 或者 owner/name
+    // 默认master分支, 后面添加"#branch"或"#tag"来指定branch或tag
     let requestUrl = `${gitOwner}/${repo}${branch ? '#' + branch : ''}`
+    let label = `${branch ? '/' + branch : ''}`
+
+    // 如果有tag存在，则下载tag
+    if (tag) {
+      requestUrl = `${gitOwner}/${repo}${tag ? '#' + tag : ''}`
+      label = `${tag ? '/' + tag : ''}`
+    }
 
     // 2.把路径资源下载到某个路径上
 
     // todo 后续可以增加缓存功能 
-    await wrapLoading(this.downloadGitRepo, `Waiting for download the template of ${repo}${branch ? '/' + branch : ''}`, requestUrl, downloadUrl)
+    await wrapLoading(this.downloadGitRepo, `Waiting for download the template of ${repo}${label}`, requestUrl, downloadUrl)
     return downloadUrl
   }
 
